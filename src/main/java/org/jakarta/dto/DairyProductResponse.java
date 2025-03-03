@@ -1,14 +1,14 @@
-package org.jakarta;
+package org.jakarta.dto;
 
-public class DairyProduct {
+public class DairyProductResponse {
 
     private String name;
     private double price;
 
-    public DairyProduct() {}
+    public DairyProductResponse() {}
 
 
-    public DairyProduct(String name, double price) {
+    public DairyProductResponse(String name, double price) {
         this.name = name;
         this.price = price;
     }
