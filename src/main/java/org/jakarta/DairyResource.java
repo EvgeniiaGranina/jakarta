@@ -3,6 +3,7 @@ package org.jakarta;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import lombok.extern.java.Log;
+import org.jakarta.dto.DairyProductResponse;
 
 
 @Path("dairies")
@@ -11,8 +12,8 @@ public class DairyResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public DairyProduct firstTest(){
-        return new DairyProduct("Ost", 123);
+    public DairyProductResponse firstTest(){
+        return new DairyProductResponse("Ost", 123);
     }
 
 //    private DairyRepository repository;
