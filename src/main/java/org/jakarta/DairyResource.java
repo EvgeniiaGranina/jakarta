@@ -1,76 +1,74 @@
 package org.jakarta;
 
 import jakarta.inject.Inject;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.java.Log;
+import org.jakarta.dto.CreateDairyProduct;
 import org.jakarta.dto.DairyProductResponse;
 import org.jakarta.entity.DairyProduct;
+import org.jakarta.exceptions.NotFound;
+import org.jakarta.maper.DairyMapper;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 
 @Path("dairies")
 @Log
 public class DairyResource {
 
+
+
+    private DairyProductRepository repository;
+
     @Inject
-    private Repository repository;
+    public DairyResource(DairyProductRepository dairyProductRepository) {
+        this.repository = dairyProductRepository;
+    }
 
+    public DairyResource(){
 
-
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public DairyProductResponse firstTest(){
-        return new DairyProductResponse("Ost", 123, "Mild", LocalDate.of(2025, 03, 02), "Arla", 1000.30);
+    public List<DairyProductResponse> getDairyProducts() {
+        return repository.findAll()
+                .map(DairyProductResponse::new)
+                .filter(Objects::nonNull)
+                .toList();
+
     }
+
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public DairyProductResponse getOneDP(@PathParam("id") Long id) {
+        return repository.findById(id).map(DairyProductResponse::new).orElseThrow(
+                () -> new NotFound("Dairy product with id " + id + " not found")
+        );
+    }
+
+
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public DairyProductResponse create (DairyProduct dairyProduct){
+    public Response createNewDairyProduct(CreateDairyProduct dairyProduct) {
+        if (dairyProduct == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Product cannot be null")
+                    .build();
+        }
 
-        repository.saveDairyProduct(dairyProduct);
-        return new DairyProductResponse("Ost", 123, "Mild", LocalDate.of(2025, 03, 02), "Arla", 1000.30);
+        DairyProduct newDairyProduct = DairyMapper.map(dairyProduct);
+
+        newDairyProduct = repository.save(newDairyProduct);
+        return Response.status(Response.Status.CREATED)
+                .header("Location", "/api/dairies" + newDairyProduct.getId())
+                .build();
     }
 
-//    private DairyRepository repository;
-//
-//    @Inject
-//    public DairyResource(DairyRepository repository) {
-//        this.repository = repository;
-//    }
-//
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public DairyResponse getDairy() {
-//        return new DairyResponse("Milk", 23);
-//    }
-//
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public DairyResponse create(DairyProduct dairy) {
-//        repository.save(dairy);
-//        return new DairyResponse("Ost", 140);
-//    }
-//
-//    @GET
-//    @Path("many")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Dairies test() {
-//        java.util.List<DairyResponse> dairyList = new ArrayList<DairyResponse>();
-//        dairyList.add(new DairyResponse("Milk", 23));
-//        dairyList.add(new DairyResponse("Ost", 135));
-//        return new Dairies(dairyList, 2);
-//    }
-//
-//    public record Dairies(List<DairyResponse> values, int totalProduct) {
-//
-//    }
 
 }
