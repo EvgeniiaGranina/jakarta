@@ -1,74 +1,39 @@
 package org.jakarta.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import org.jakarta.entity.DairyProduct;
+
 import java.time.LocalDate;
 
-public class DairyProductResponse {
+/**
+ * DTO for {@link org.jakarta.entity.DairyProduct}
+ */
+public record DairyProductResponse(Long id, @NotBlank(message = "Title is mandatory") String name,
+                                   @NotBlank(message = "Description is mandatory") String description,
+                                   @NotNull(message = "Production date is mandatory") @PastOrPresent(message = "Production date must be in the past or present") LocalDate productionDate,
+                                   @NotBlank(message = "Brand is mandatory") String brand,
+                                   @Positive(message = "Price must be positive") double price,
+                                   @Positive(message = "Weight must be positive") double weight) {
 
-    private String name;
-    private double price;
-    private String description;
-    private LocalDate productionDate;
-    private String brand;
-    private double weight;
-
-    public DairyProductResponse() {}
-
-
-    public DairyProductResponse(String name, double price, String description, LocalDate productionDate, String brand, double weight) {
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.productionDate = productionDate;
-        this.brand = brand;
-        this.weight = weight;
-
+    public DairyProductResponse (DairyProduct dairyProduct) {
+        this(dairyProduct.getId(), dairyProduct.getName(),
+                dairyProduct.getDescription(),
+                dairyProduct.getProductionDate(),
+                dairyProduct.getBrand(),
+                dairyProduct.getPrice(),
+                dairyProduct.getWeight());
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getProductionDate() {
-        return productionDate;
-    }
-
-    public void setProductionDate(LocalDate productionDate) {
-        this.productionDate = productionDate;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public static DairyProductResponse map(DairyProduct dairyProduct) {
+        return new DairyProductResponse(dairyProduct.getId(),
+                dairyProduct.getName(),
+                dairyProduct.getDescription(),
+                dairyProduct.getProductionDate(),
+                dairyProduct.getBrand(),
+                dairyProduct.getPrice(),
+                dairyProduct.getWeight());
     }
 }
