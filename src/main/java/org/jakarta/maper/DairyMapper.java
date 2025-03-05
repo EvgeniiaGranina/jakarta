@@ -7,6 +7,8 @@ import org.jakarta.entity.DairyProduct;
 public class DairyMapper {
 
     public static DairyProductResponse map(DairyProduct dairyProduct) {
+        if (dairyProduct == null)
+            return null;
         return new DairyProductResponse(dairyProduct.getId(),
                         dairyProduct.getName(),
                         dairyProduct.getDescription(),
@@ -17,6 +19,8 @@ public class DairyMapper {
     }
 
     public static DairyProduct map(CreateDairyProduct dairyProduct) {
+        if (dairyProduct == null)
+            return null;
         DairyProduct newDairyProduct = new DairyProduct();
         newDairyProduct.setName(dairyProduct.name());
         newDairyProduct.setDescription(dairyProduct.description());
